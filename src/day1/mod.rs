@@ -109,6 +109,14 @@ mod tests {
 
             assert_eq!(max_calories, 2000);
         }
+
+        #[test]
+        fn my_input() {
+            let file = include_str!("./input.txt");
+            let max_calories = part1(file);
+
+            assert_eq!(max_calories, 67027);
+        }
     }
 
     mod part2 {
@@ -152,6 +160,14 @@ mod tests {
             let sum_max_3 = part2(file);
 
             assert_eq!(sum_max_3, 6000);
+        }
+
+        #[test]
+        fn my_input() {
+            let file = include_str!("./input.txt");
+            let max_calories = part2(file);
+
+            assert_eq!(max_calories, 197291);
         }
     }
 }

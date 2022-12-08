@@ -34,6 +34,23 @@ fn is_superset(r1: &RangeInclusive<u64>, r2: &RangeInclusive<u64>) -> bool {
     r1.start() <= r2.start() && r1.end() >= r2.end()
 }
 
+pub fn part2(input: &str) -> u64 {
+    input
+        .lines()
+        .filter(|line| {
+            // TODO could optimize - if first_elf_start > second_elf_end then no need to parse the
+            // other values.
+            let (first_elf_range, second_elf_range) = elf_ranges(line);
+            intersect(&first_elf_range, &second_elf_range)
+        })
+        .count() as u64
+}
+
+fn intersect(r1: &RangeInclusive<u64>, r2: &RangeInclusive<u64>) -> bool {
+    let disjoint = r1.end() < r2.start() || r1.start() > r2.end();
+    !disjoint
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,6 +75,29 @@ mod tests {
             let file = include_str!("./input.txt");
 
             assert_eq!(part1(file), 584);
+        }
+    }
+
+    mod part2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let file = "2-4,6-8\n\
+                    2-3,4-5\n\
+                    5-7,7-9\n\
+                    2-8,3-7\n\
+                    6-6,4-6\n\
+                    2-6,4-8\n";
+
+            assert_eq!(part2(file), 4);
+        }
+
+        #[test]
+        fn my_input() {
+            let file = include_str!("./input.txt");
+
+            assert_eq!(part2(file), 933);
         }
     }
 }

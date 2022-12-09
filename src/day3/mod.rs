@@ -48,7 +48,7 @@ impl PriorityMask {
     where
         I: IntoIterator<Item = Self>,
     {
-        let mut single_item = priorities
+        let single_item = priorities
             .into_iter()
             .map(|priority| priority.0)
             .fold(!0, |acc, priority| acc & priority);
@@ -58,14 +58,8 @@ impl PriorityMask {
         }
 
         // Waiting on `u64::ilog2`...
-        let mut priority = 0;
-        while single_item > 0 {
-            single_item >>= 1;
-            priority += 1;
-        }
-
-        // Subtract by 1 because priorites are 1..52 instead of 0..51
-        Some(priority - 1)
+        let priority = (single_item - 1).count_ones() as u64;
+        Some(priority)
     }
 }
 

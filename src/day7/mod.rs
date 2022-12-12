@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 pub fn part1(input: &str) -> usize {
-    let fs = build_filesystem(input);
+    let fs = build_file_system(input);
 
     dir_sizes(&fs)
         .into_iter()
@@ -31,7 +31,7 @@ struct Directory<'a> {
     contents: FileSystem<'a>,
 }
 
-fn build_filesystem(input: &str) -> FileSystem {
+fn build_file_system(input: &str) -> FileSystem {
     let mut path = Vec::new();
     let mut fs = FileSystem::new();
     let mut seen_paths = HashSet::new();
@@ -75,6 +75,22 @@ fn build_filesystem(input: &str) -> FileSystem {
     }
 
     fs
+}
+
+pub fn part2(input: &str) -> usize {
+    let fs = build_file_system(input);
+
+    let disk_space = 70_000_000;
+    let total_needed = 30_000_000;
+    let total_used = fs.get("/").map_or(0, |dir| dir.size);
+    let total_free = disk_space - total_used;
+    let needed = total_needed - total_free;
+
+    dir_sizes(&fs)
+        .into_iter()
+        .filter(|&size| size >= needed)
+        .min()
+        .expect("File system empty")
 }
 
 #[cfg(test)]
@@ -128,6 +144,45 @@ mod tests {
         fn my_input() {
             let file = include_str!("./input.txt");
             assert_eq!(part1(file), 1_086_293);
+        }
+    }
+
+    mod part2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let file = "$ cd /\n\
+                        $ ls\n\
+                        dir a\n\
+                        14848514 b.txt\n\
+                        8504156 c.dat\n\
+                        dir d\n\
+                        $ cd a\n\
+                        $ ls\n\
+                        dir e\n\
+                        29116 f\n\
+                        2557 g\n\
+                        62596 h.lst\n\
+                        $ cd e\n\
+                        $ ls\n\
+                        584 i\n\
+                        $ cd ..\n\
+                        $ cd ..\n\
+                        $ cd d\n\
+                        $ ls\n\
+                        4060174 j\n\
+                        8033020 d.log\n\
+                        5626152 d.ext\n\
+                        7214296 k";
+
+            assert_eq!(part2(file), 24_933_642);
+        }
+
+        #[test]
+        fn my_input() {
+            let file = include_str!("./input.txt");
+            assert_eq!(part2(file), 366_028);
         }
     }
 }

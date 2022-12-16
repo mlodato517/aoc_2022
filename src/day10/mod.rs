@@ -114,164 +114,166 @@ where
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "addx 15\n\
+                           addx -11\n\
+                           addx 6\n\
+                           addx -3\n\
+                           addx 5\n\
+                           addx -1\n\
+                           addx -8\n\
+                           addx 13\n\
+                           addx 4\n\
+                           noop\n\
+                           addx -1\n\
+                           addx 5\n\
+                           addx -1\n\
+                           addx 5\n\
+                           addx -1\n\
+                           addx 5\n\
+                           addx -1\n\
+                           addx 5\n\
+                           addx -1\n\
+                           addx -35\n\
+                           addx 1\n\
+                           addx 24\n\
+                           addx -19\n\
+                           addx 1\n\
+                           addx 16\n\
+                           addx -11\n\
+                           noop\n\
+                           noop\n\
+                           addx 21\n\
+                           addx -15\n\
+                           noop\n\
+                           noop\n\
+                           addx -3\n\
+                           addx 9\n\
+                           addx 1\n\
+                           addx -3\n\
+                           addx 8\n\
+                           addx 1\n\
+                           addx 5\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx -36\n\
+                           noop\n\
+                           addx 1\n\
+                           addx 7\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx 2\n\
+                           addx 6\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx 1\n\
+                           noop\n\
+                           noop\n\
+                           addx 7\n\
+                           addx 1\n\
+                           noop\n\
+                           addx -13\n\
+                           addx 13\n\
+                           addx 7\n\
+                           noop\n\
+                           addx 1\n\
+                           addx -33\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx 2\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx 8\n\
+                           noop\n\
+                           addx -1\n\
+                           addx 2\n\
+                           addx 1\n\
+                           noop\n\
+                           addx 17\n\
+                           addx -9\n\
+                           addx 1\n\
+                           addx 1\n\
+                           addx -3\n\
+                           addx 11\n\
+                           noop\n\
+                           noop\n\
+                           addx 1\n\
+                           noop\n\
+                           addx 1\n\
+                           noop\n\
+                           noop\n\
+                           addx -13\n\
+                           addx -19\n\
+                           addx 1\n\
+                           addx 3\n\
+                           addx 26\n\
+                           addx -30\n\
+                           addx 12\n\
+                           addx -1\n\
+                           addx 3\n\
+                           addx 1\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx -9\n\
+                           addx 18\n\
+                           addx 1\n\
+                           addx 2\n\
+                           noop\n\
+                           noop\n\
+                           addx 9\n\
+                           noop\n\
+                           noop\n\
+                           noop\n\
+                           addx -1\n\
+                           addx 2\n\
+                           addx -37\n\
+                           addx 1\n\
+                           addx 3\n\
+                           noop\n\
+                           addx 15\n\
+                           addx -21\n\
+                           addx 22\n\
+                           addx -6\n\
+                           addx 1\n\
+                           noop\n\
+                           addx 2\n\
+                           addx 1\n\
+                           noop\n\
+                           addx -10\n\
+                           noop\n\
+                           noop\n\
+                           addx 20\n\
+                           addx 1\n\
+                           addx 2\n\
+                           addx 2\n\
+                           addx -6\n\
+                           addx -11\n\
+                           noop\n\
+                           noop\n\
+                           noop";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "addx 15\n\
-                        addx -11\n\
-                        addx 6\n\
-                        addx -3\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx -8\n\
-                        addx 13\n\
-                        addx 4\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx -35\n\
-                        addx 1\n\
-                        addx 24\n\
-                        addx -19\n\
-                        addx 1\n\
-                        addx 16\n\
-                        addx -11\n\
-                        noop\n\
-                        noop\n\
-                        addx 21\n\
-                        addx -15\n\
-                        noop\n\
-                        noop\n\
-                        addx -3\n\
-                        addx 9\n\
-                        addx 1\n\
-                        addx -3\n\
-                        addx 8\n\
-                        addx 1\n\
-                        addx 5\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -36\n\
-                        noop\n\
-                        addx 1\n\
-                        addx 7\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 2\n\
-                        addx 6\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        addx 7\n\
-                        addx 1\n\
-                        noop\n\
-                        addx -13\n\
-                        addx 13\n\
-                        addx 7\n\
-                        noop\n\
-                        addx 1\n\
-                        addx -33\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 2\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 8\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 2\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 17\n\
-                        addx -9\n\
-                        addx 1\n\
-                        addx 1\n\
-                        addx -3\n\
-                        addx 11\n\
-                        noop\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        addx -13\n\
-                        addx -19\n\
-                        addx 1\n\
-                        addx 3\n\
-                        addx 26\n\
-                        addx -30\n\
-                        addx 12\n\
-                        addx -1\n\
-                        addx 3\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -9\n\
-                        addx 18\n\
-                        addx 1\n\
-                        addx 2\n\
-                        noop\n\
-                        noop\n\
-                        addx 9\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 2\n\
-                        addx -37\n\
-                        addx 1\n\
-                        addx 3\n\
-                        noop\n\
-                        addx 15\n\
-                        addx -21\n\
-                        addx 22\n\
-                        addx -6\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 2\n\
-                        addx 1\n\
-                        noop\n\
-                        addx -10\n\
-                        noop\n\
-                        noop\n\
-                        addx 20\n\
-                        addx 1\n\
-                        addx 2\n\
-                        addx 2\n\
-                        addx -6\n\
-                        addx -11\n\
-                        noop\n\
-                        noop\n\
-                        noop";
-            assert_eq!(part1(file), 13140);
+            assert_eq!(part1(EXAMPLE), 13140);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 13720);
+            assert_eq!(part1(INPUT), 13720);
         }
     }
 
@@ -280,159 +282,31 @@ mod tests {
 
         #[test]
         fn example() {
-            let file = "addx 15\n\
-                        addx -11\n\
-                        addx 6\n\
-                        addx -3\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx -8\n\
-                        addx 13\n\
-                        addx 4\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx 5\n\
-                        addx -1\n\
-                        addx -35\n\
-                        addx 1\n\
-                        addx 24\n\
-                        addx -19\n\
-                        addx 1\n\
-                        addx 16\n\
-                        addx -11\n\
-                        noop\n\
-                        noop\n\
-                        addx 21\n\
-                        addx -15\n\
-                        noop\n\
-                        noop\n\
-                        addx -3\n\
-                        addx 9\n\
-                        addx 1\n\
-                        addx -3\n\
-                        addx 8\n\
-                        addx 1\n\
-                        addx 5\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -36\n\
-                        noop\n\
-                        addx 1\n\
-                        addx 7\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 2\n\
-                        addx 6\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        addx 7\n\
-                        addx 1\n\
-                        noop\n\
-                        addx -13\n\
-                        addx 13\n\
-                        addx 7\n\
-                        noop\n\
-                        addx 1\n\
-                        addx -33\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 2\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx 8\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 2\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 17\n\
-                        addx -9\n\
-                        addx 1\n\
-                        addx 1\n\
-                        addx -3\n\
-                        addx 11\n\
-                        noop\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        addx -13\n\
-                        addx -19\n\
-                        addx 1\n\
-                        addx 3\n\
-                        addx 26\n\
-                        addx -30\n\
-                        addx 12\n\
-                        addx -1\n\
-                        addx 3\n\
-                        addx 1\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -9\n\
-                        addx 18\n\
-                        addx 1\n\
-                        addx 2\n\
-                        noop\n\
-                        noop\n\
-                        addx 9\n\
-                        noop\n\
-                        noop\n\
-                        noop\n\
-                        addx -1\n\
-                        addx 2\n\
-                        addx -37\n\
-                        addx 1\n\
-                        addx 3\n\
-                        noop\n\
-                        addx 15\n\
-                        addx -21\n\
-                        addx 22\n\
-                        addx -6\n\
-                        addx 1\n\
-                        noop\n\
-                        addx 2\n\
-                        addx 1\n\
-                        noop\n\
-                        addx -10\n\
-                        noop\n\
-                        noop\n\
-                        addx 20\n\
-                        addx 1\n\
-                        addx 2\n\
-                        addx 2\n\
-                        addx -6\n\
-                        addx -11\n\
-                        noop\n\
-                        noop\n\
-                        noop";
-            part2(file);
+            let part2_output = part2(EXAMPLE);
+            let part2_borrowed = [
+                &part2_output[0],
+                &part2_output[1],
+                &part2_output[2],
+                &part2_output[3],
+                &part2_output[4],
+                &part2_output[5],
+            ];
+
+            let expected = [
+                b"##..##..##..##..##..##..##..##..##..##..",
+                b"###...###...###...###...###...###...###.",
+                b"####....####....####....####....####....",
+                b"#####.....#####.....#####.....#####.....",
+                b"######......######......######......####",
+                b"#######.......#######.......#######.....",
+            ];
+
+            assert_eq!(part2_borrowed, expected);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            let part2_output = part2(file);
+            let part2_output = part2(INPUT);
             let part2_borrowed = [
                 &part2_output[0],
                 &part2_output[1],

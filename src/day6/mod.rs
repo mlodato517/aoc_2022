@@ -50,31 +50,29 @@ fn is_unique_long(items: &mut [u8; 14]) -> bool {
 mod tests {
     use super::*;
 
+    const EXAMPLE1: &str = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
+    const EXAMPLE2: &str = "bvwbjplbgvbhsrlpgdmjqwftvncz";
+    const EXAMPLE3: &str = "nppdvjthqldpwncqszvftbrmjlhg";
+    const EXAMPLE4: &str = "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg";
+    const EXAMPLE5: &str = "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn examples() {
-            let file = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
-            assert_eq!(part1(file), 7);
-
-            let file = "bvwbjplbgvbhsrlpgdmjqwftvncz";
-            assert_eq!(part1(file), 5);
-
-            let file = "nppdvjthqldpwncqszvftbrmjlhg";
-            assert_eq!(part1(file), 6);
-
-            let file = "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg";
-            assert_eq!(part1(file), 10);
-
-            let file = "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw";
-            assert_eq!(part1(file), 11);
+            assert_eq!(part1(EXAMPLE1), 7);
+            assert_eq!(part1(EXAMPLE2), 5);
+            assert_eq!(part1(EXAMPLE3), 6);
+            assert_eq!(part1(EXAMPLE4), 10);
+            assert_eq!(part1(EXAMPLE5), 11);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 1723);
+            assert_eq!(part1(INPUT), 1723);
         }
     }
 
@@ -83,26 +81,16 @@ mod tests {
 
         #[test]
         fn examples() {
-            let file = "mjqjpqmgbljsphdztnvjfqwrcgsmlb";
-            assert_eq!(part2(file), 19);
-
-            let file = "bvwbjplbgvbhsrlpgdmjqwftvncz";
-            assert_eq!(part2(file), 23);
-
-            let file = "nppdvjthqldpwncqszvftbrmjlhg";
-            assert_eq!(part2(file), 23);
-
-            let file = "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg";
-            assert_eq!(part2(file), 29);
-
-            let file = "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw";
-            assert_eq!(part2(file), 26);
+            assert_eq!(part2(EXAMPLE1), 19);
+            assert_eq!(part2(EXAMPLE2), 23);
+            assert_eq!(part2(EXAMPLE3), 23);
+            assert_eq!(part2(EXAMPLE4), 29);
+            assert_eq!(part2(EXAMPLE5), 26);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), 3708);
+            assert_eq!(part2(INPUT), 3708);
         }
     }
 }

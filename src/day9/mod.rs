@@ -144,26 +144,28 @@ pub fn part2(input: &str) -> u64 {
 mod tests {
     use super::*;
 
+    const EXAMPLE1: &str = "R 4\n\
+                            U 4\n\
+                            L 3\n\
+                            D 1\n\
+                            R 4\n\
+                            D 1\n\
+                            L 5\n\
+                            R 2";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "R 4\n\
-                        U 4\n\
-                        L 3\n\
-                        D 1\n\
-                        R 4\n\
-                        D 1\n\
-                        L 5\n\
-                        R 2";
-            assert_eq!(part1(file), 13);
+            assert_eq!(part1(EXAMPLE1), 13);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 5619);
+            assert_eq!(part1(INPUT), 5619);
         }
     }
 
@@ -172,15 +174,7 @@ mod tests {
 
         #[test]
         fn example_1() {
-            let file = "R 4\n\
-                        U 4\n\
-                        L 3\n\
-                        D 1\n\
-                        R 4\n\
-                        D 1\n\
-                        L 5\n\
-                        R 2";
-            assert_eq!(part2(file), 1);
+            assert_eq!(part2(EXAMPLE1), 1);
         }
 
         #[test]
@@ -198,8 +192,7 @@ mod tests {
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), 2376);
+            assert_eq!(part2(INPUT), 2376);
         }
     }
 }

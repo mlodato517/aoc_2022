@@ -132,24 +132,25 @@ where
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "30373\n\
+                           25512\n\
+                           65332\n\
+                           33549\n\
+                           35390";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "30373\n\
-            25512\n\
-            65332\n\
-            33549\n\
-            35390";
-
-            assert_eq!(part1(file), 21);
+            assert_eq!(part1(EXAMPLE), 21);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 1870);
+            assert_eq!(part1(INPUT), 1870);
         }
     }
 
@@ -158,19 +159,12 @@ mod tests {
 
         #[test]
         fn example() {
-            let file = "30373\n\
-            25512\n\
-            65332\n\
-            33549\n\
-            35390";
-
-            assert_eq!(part2(file), 8);
+            assert_eq!(part2(EXAMPLE), 8);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), 517440);
+            assert_eq!(part2(INPUT), 517440);
         }
     }
 }

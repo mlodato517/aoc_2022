@@ -159,29 +159,34 @@ pub fn part2(input: &str) -> String {
 mod tests {
     use super::*;
 
+    fn example_file() -> String {
+        // Note whitespace is important here!
+        let mut file = "    [D]    \n".to_string();
+        file.push_str("[N] [C]    \n");
+        file.push_str("[Z] [M] [P]\n");
+        file.push_str(" 1   2   3 \n");
+        file.push('\n');
+        file.push_str("move 1 from 2 to 1\n");
+        file.push_str("move 3 from 1 to 3\n");
+        file.push_str("move 2 from 2 to 1\n");
+        file.push_str("move 1 from 1 to 2\n");
+
+        file
+    }
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            // Note whitespace is important here!
-            let mut file = "    [D]    \n".to_string();
-            file.push_str("[N] [C]    \n");
-            file.push_str("[Z] [M] [P]\n");
-            file.push_str(" 1   2   3 \n");
-            file.push('\n');
-            file.push_str("move 1 from 2 to 1\n");
-            file.push_str("move 3 from 1 to 3\n");
-            file.push_str("move 2 from 2 to 1\n");
-            file.push_str("move 1 from 1 to 2\n");
-
-            assert_eq!(part1(&file), "CMZ");
+            assert_eq!(part1(&example_file()), "CMZ");
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), "ZWHVFWQWW");
+            assert_eq!(part1(INPUT), "ZWHVFWQWW");
         }
     }
 
@@ -190,24 +195,12 @@ mod tests {
 
         #[test]
         fn example() {
-            // Note whitespace is important here!
-            let mut file = "    [D]    \n".to_string();
-            file.push_str("[N] [C]    \n");
-            file.push_str("[Z] [M] [P]\n");
-            file.push_str(" 1   2   3 \n");
-            file.push('\n');
-            file.push_str("move 1 from 2 to 1\n");
-            file.push_str("move 3 from 1 to 3\n");
-            file.push_str("move 2 from 2 to 1\n");
-            file.push_str("move 1 from 1 to 2\n");
-
-            assert_eq!(part2(&file), "MCD");
+            assert_eq!(part2(&example_file()), "MCD");
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), "HZFZCCWWV");
+            assert_eq!(part2(INPUT), "HZFZCCWWV");
         }
     }
 }

@@ -94,24 +94,26 @@ pub fn part2(input: &str) -> u64 {
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "vJrwpWtwJgWrhcsFMMfFFhFp\n\
+                           jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
+                           PmmdzqPrVvPwwTWBwg\n\
+                           wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
+                           ttgJtRGJQctTZtZT\n\
+                           CrZsJsPPZsGzwwsLwLmpwMDw";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "vJrwpWtwJgWrhcsFMMfFFhFp\n\
-                    jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
-                    PmmdzqPrVvPwwTWBwg\n\
-                    wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
-                    ttgJtRGJQctTZtZT\n\
-                    CrZsJsPPZsGzwwsLwLmpwMDw";
-            assert_eq!(part1(file), 157);
+            assert_eq!(part1(EXAMPLE), 157);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 7863);
+            assert_eq!(part1(INPUT), 7863);
         }
     }
 
@@ -120,19 +122,12 @@ mod tests {
 
         #[test]
         fn example() {
-            let file = "vJrwpWtwJgWrhcsFMMfFFhFp\n\
-                    jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\n\
-                    PmmdzqPrVvPwwTWBwg\n\
-                    wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\n\
-                    ttgJtRGJQctTZtZT\n\
-                    CrZsJsPPZsGzwwsLwLmpwMDw";
-            assert_eq!(part2(file), 70);
+            assert_eq!(part2(EXAMPLE), 70);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), 2488);
+            assert_eq!(part2(INPUT), 2488);
         }
     }
 }

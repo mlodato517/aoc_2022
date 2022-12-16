@@ -55,26 +55,26 @@ fn intersect(r1: &RangeInclusive<u64>, r2: &RangeInclusive<u64>) -> bool {
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "2-4,6-8\n\
+                           2-3,4-5\n\
+                           5-7,7-9\n\
+                           2-8,3-7\n\
+                           6-6,4-6\n\
+                           2-6,4-8\n";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "2-4,6-8\n\
-                    2-3,4-5\n\
-                    5-7,7-9\n\
-                    2-8,3-7\n\
-                    6-6,4-6\n\
-                    2-6,4-8\n";
-
-            assert_eq!(part1(file), 2);
+            assert_eq!(part1(EXAMPLE), 2);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-
-            assert_eq!(part1(file), 584);
+            assert_eq!(part1(INPUT), 584);
         }
     }
 
@@ -83,21 +83,12 @@ mod tests {
 
         #[test]
         fn example() {
-            let file = "2-4,6-8\n\
-                    2-3,4-5\n\
-                    5-7,7-9\n\
-                    2-8,3-7\n\
-                    6-6,4-6\n\
-                    2-6,4-8\n";
-
-            assert_eq!(part2(file), 4);
+            assert_eq!(part2(EXAMPLE), 4);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-
-            assert_eq!(part2(file), 933);
+            assert_eq!(part2(INPUT), 933);
         }
     }
 }

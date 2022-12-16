@@ -97,36 +97,38 @@ pub fn part2(input: &str) -> usize {
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "$ cd /\n\
+                           $ ls\n\
+                           dir a\n\
+                           14848514 b.txt\n\
+                           8504156 c.dat\n\
+                           dir d\n\
+                           $ cd a\n\
+                           $ ls\n\
+                           dir e\n\
+                           29116 f\n\
+                           2557 g\n\
+                           62596 h.lst\n\
+                           $ cd e\n\
+                           $ ls\n\
+                           584 i\n\
+                           $ cd ..\n\
+                           $ cd ..\n\
+                           $ cd d\n\
+                           $ ls\n\
+                           4060174 j\n\
+                           8033020 d.log\n\
+                           5626152 d.ext\n\
+                           7214296 k";
+
+    const INPUT: &str = include_str!("./input.txt");
+
     mod part1 {
         use super::*;
 
         #[test]
         fn example() {
-            let file = "$ cd /\n\
-                        $ ls\n\
-                        dir a\n\
-                        14848514 b.txt\n\
-                        8504156 c.dat\n\
-                        dir d\n\
-                        $ cd a\n\
-                        $ ls\n\
-                        dir e\n\
-                        29116 f\n\
-                        2557 g\n\
-                        62596 h.lst\n\
-                        $ cd e\n\
-                        $ ls\n\
-                        584 i\n\
-                        $ cd ..\n\
-                        $ cd ..\n\
-                        $ cd d\n\
-                        $ ls\n\
-                        4060174 j\n\
-                        8033020 d.log\n\
-                        5626152 d.ext\n\
-                        7214296 k";
-
-            assert_eq!(part1(file), 95437);
+            assert_eq!(part1(EXAMPLE), 95437);
         }
 
         #[test]
@@ -142,8 +144,7 @@ mod tests {
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part1(file), 1_086_293);
+            assert_eq!(part1(INPUT), 1_086_293);
         }
     }
 
@@ -152,37 +153,12 @@ mod tests {
 
         #[test]
         fn example() {
-            let file = "$ cd /\n\
-                        $ ls\n\
-                        dir a\n\
-                        14848514 b.txt\n\
-                        8504156 c.dat\n\
-                        dir d\n\
-                        $ cd a\n\
-                        $ ls\n\
-                        dir e\n\
-                        29116 f\n\
-                        2557 g\n\
-                        62596 h.lst\n\
-                        $ cd e\n\
-                        $ ls\n\
-                        584 i\n\
-                        $ cd ..\n\
-                        $ cd ..\n\
-                        $ cd d\n\
-                        $ ls\n\
-                        4060174 j\n\
-                        8033020 d.log\n\
-                        5626152 d.ext\n\
-                        7214296 k";
-
-            assert_eq!(part2(file), 24_933_642);
+            assert_eq!(part2(EXAMPLE), 24_933_642);
         }
 
         #[test]
         fn my_input() {
-            let file = include_str!("./input.txt");
-            assert_eq!(part2(file), 366_028);
+            assert_eq!(part2(INPUT), 366_028);
         }
     }
 }

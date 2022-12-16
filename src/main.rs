@@ -49,4 +49,9 @@ fn main() {
     println!("Day 9 Part 2 - {}", day9::part2(DAY_9_INPUT));
 
     println!("Day 10 Part 1 - {}", day10::part1(DAY_10_INPUT));
+    println!("Day 10 Part 2");
+    let day10_part2 = day10::part2(DAY_10_INPUT);
+    for row in day10_part2 {
+        println!("\t{}", std::str::from_utf8(&row).unwrap());
+    }
 }

@@ -1,135 +1,55 @@
-pub fn part1(input: &str) -> u64 {
-    let mut monkeys = parse_monkeys(input);
-    let mut inspection_count = vec![0; monkeys.len()];
-    for _ in 0..20 {
-        // Still waiting on `get_many_mut` ... might move to `nightly` or copy-paste it.
-        for idx in 0..monkeys.len() {
-            let items = std::mem::take(&mut monkeys[idx].items);
-            inspection_count[idx] += items.len() as u64;
+mod monkey;
 
-            for item in items {
-                let new_item = monkeys[idx].update_worry(item) / 3;
-                let next_monkey = if monkeys[idx].test_divisibility(new_item) {
-                    monkeys[idx].true_monkey
-                } else {
-                    monkeys[idx].false_monkey
-                };
-                // Could use unchecked indexing here
-                monkeys[next_monkey].items.push(new_item);
-            }
-        }
-    }
+use monkey::Monkey;
+
+pub fn part1(input: &str) -> u64 {
+    let monkeys = parse_monkeys(input);
+    let manage_worry = |worry| worry / 3;
+
+    let mut inspection_count = keep_away_activity_count(monkeys, manage_worry, 20);
+
+    // Probably faster to just run a "max" with two buckets but my input only has 8 monkeys.
+    inspection_count.sort_unstable();
+    inspection_count.into_iter().rev().take(2).product()
+}
+
+fn parse_monkeys(input: &str) -> Vec<Monkey> {
+    input.split("\n\n").map(monkey::parse_block).collect()
+}
+
+pub fn part2(input: &str) -> u64 {
+    let monkeys = parse_monkeys(input);
+    let modulus: i64 = monkeys.iter().map(|m| m.divisibility_test).product();
+    let manage_worry = |worry| worry % modulus;
+
+    let mut inspection_count = keep_away_activity_count(monkeys, manage_worry, 10_000);
 
     // Technically faster to just run a "max" with two buckets but my input only has 8 monkeys.
     inspection_count.sort_unstable();
     inspection_count.into_iter().rev().take(2).product()
 }
 
-#[derive(Debug)]
-struct Monkey {
-    items: Vec<i64>,
-    operation: Operation,
-    divisibility_test: i64,
-    true_monkey: usize,
-    false_monkey: usize,
-}
+fn keep_away_activity_count<F>(mut monkeys: Vec<Monkey>, manage_worry: F, rounds: usize) -> Vec<u64>
+where
+    F: Fn(i64) -> i64,
+{
+    let mut inspection_count = vec![0; monkeys.len()];
+    for _ in 0..rounds {
+        // Still waiting on `get_many_mut` ... might move to `nightly` or copy-paste it.
+        for idx in 0..monkeys.len() {
+            let items = std::mem::take(&mut monkeys[idx].items);
+            inspection_count[idx] += items.len() as u64;
 
-impl Monkey {
-    fn update_worry(&self, worry: i64) -> i64 {
-        match self.operation {
-            Operation::Add(Value::Literal(n)) => worry + n,
-            Operation::Multiply(Value::Literal(n)) => worry * n,
-            Operation::Add(Value::Old) => worry + worry,
-            Operation::Multiply(Value::Old) => worry * worry,
+            for item in items {
+                let new_item = manage_worry(monkeys[idx].update_worry(item));
+                let next_monkey = monkeys[idx].next_monkey(new_item);
+                // Could use unchecked indexing here
+                monkeys[next_monkey].items.push(new_item);
+            }
         }
     }
-    fn test_divisibility(&self, worry: i64) -> bool {
-        worry % self.divisibility_test == 0
-    }
-}
 
-#[derive(Debug)]
-enum Operation {
-    Add(Value),
-    Multiply(Value),
-}
-
-#[derive(Debug)]
-enum Value {
-    Literal(i64),
-    Old,
-}
-
-fn parse_monkeys(input: &str) -> Vec<Monkey> {
-    input.split("\n\n").map(parse_block).collect()
-}
-
-fn parse_block(block: &str) -> Monkey {
-    let mut lines = block.lines().skip(1);
-
-    let items_line = lines.next().expect("Should have starting items");
-    let items = parse_items(items_line);
-
-    let op_line = lines.next().expect("Should have operation");
-    let operation = parse_operation(op_line);
-
-    let div_test_line = lines.next().expect("Should have test");
-    let divisibility_test = parse_divisibility(div_test_line);
-
-    let true_line = lines.next().expect("Should have 'if true' line");
-    let true_monkey = parse_next_monkey(true_line);
-
-    let false_line = lines.next().expect("Should have 'if false' line");
-    let false_monkey = parse_next_monkey(false_line);
-
-    Monkey {
-        items,
-        operation,
-        true_monkey,
-        false_monkey,
-        divisibility_test,
-    }
-}
-
-// These are all of the form 'Starting items: N1, N2, N3'
-fn parse_items(line: &str) -> Vec<i64> {
-    let nums = line.split(": ").nth(1).expect("Should have list");
-    nums.split(", ")
-        .map(|n| n.parse().expect("Invalid item number"))
-        .collect()
-}
-
-// These are all of the form 'Operation: new = old X Y'
-// where X is `+` or `*` and `Y` is a number or 'old'.
-fn parse_operation(line: &str) -> Operation {
-    let mut suffix = line.split(' ').rev();
-    let value = suffix.next().expect("Should have value");
-    let operation = suffix.next().expect("Should have operation");
-    let value = match value {
-        "old" => Value::Old,
-        value => Value::Literal(value.parse().expect("Invalid literal")),
-    };
-    match operation {
-        "*" => Operation::Multiply(value),
-        "+" => Operation::Add(value),
-        _ => panic!("Invalid operation of {operation}!"),
-    }
-}
-
-// These are all of the form 'Test: divisible by N'
-fn parse_divisibility(line: &str) -> i64 {
-    let n = line.split(' ').rev().next().expect("Should have literal");
-    n.parse().expect("Invalid number for divisibility test")
-}
-
-// These are all of the form 'If true/false: throw to monkey N'
-fn parse_next_monkey(line: &str) -> usize {
-    let monkey_num = line
-        .split(' ')
-        .rev()
-        .next()
-        .expect("Should have next monkey number");
-    monkey_num.parse().expect("Invalid number for monkey")
+    inspection_count
 }
 
 #[cfg(test)]
@@ -177,6 +97,20 @@ Monkey 3:
         #[test]
         fn my_input() {
             assert_eq!(part1(INPUT), 151312);
+        }
+    }
+
+    mod part2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            assert_eq!(part2(EXAMPLE), 2_713_310_158);
+        }
+
+        #[test]
+        fn my_input() {
+            assert_eq!(part2(INPUT), 51_382_025_916);
         }
     }
 }

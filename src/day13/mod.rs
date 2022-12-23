@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-pub fn part1(input: &str) -> u64 {
+pub fn part1(input: &str) -> usize {
     input
         .split("\n\n")
         .enumerate()
@@ -18,12 +18,12 @@ pub fn part1(input: &str) -> u64 {
 
             let in_order = first < second;
 
-            in_order.then_some(i as u64 + 1)
+            in_order.then_some(i + 1)
         })
         .sum()
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 enum PacketData {
     List(Vec<PacketData>),
     Int(u8),
@@ -102,6 +102,35 @@ impl Ord for PacketData {
     }
 }
 
+pub fn part2(input: &str) -> usize {
+    let mut packets: Vec<_> = input
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            // The top level packets are always lists
+            parse(&line[1..line.len() - 1])
+        })
+        .collect();
+
+    let divider_packet_1 = PacketData::List(vec![PacketData::Int(2)]);
+    let divider_packet_2 = PacketData::List(vec![PacketData::Int(6)]);
+    packets.push(divider_packet_1.clone());
+    packets.push(divider_packet_2.clone());
+
+    packets.sort_unstable();
+
+    let first_packet_idx = packets
+        .iter()
+        .position(|packet| packet == &divider_packet_1)
+        .expect("Lost divider packet 1!");
+    let second_packet_idx = packets
+        .iter()
+        .position(|packet| packet == &divider_packet_2)
+        .expect("Lost divider packet 2!");
+
+    (first_packet_idx + 1) * (second_packet_idx + 1)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -143,6 +172,20 @@ mod tests {
         #[test]
         fn my_input() {
             assert_eq!(part1(INPUT), 4809);
+        }
+    }
+
+    mod part2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            assert_eq!(part2(EXAMPLE), 140);
+        }
+
+        #[test]
+        fn my_input() {
+            assert_eq!(part2(INPUT), 22600);
         }
     }
 }

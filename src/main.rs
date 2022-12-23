@@ -2,6 +2,7 @@ use aoc_2022::day1;
 use aoc_2022::day10;
 use aoc_2022::day11;
 use aoc_2022::day12;
+use aoc_2022::day13;
 use aoc_2022::day2;
 use aoc_2022::day3;
 use aoc_2022::day4;
@@ -23,6 +24,7 @@ const DAY_9_INPUT: &str = include_str!("./day9/input.txt");
 const DAY_10_INPUT: &str = include_str!("./day10/input.txt");
 const DAY_11_INPUT: &str = include_str!("./day11/input.txt");
 const DAY_12_INPUT: &str = include_str!("./day12/input.txt");
+const DAY_13_INPUT: &str = include_str!("./day13/input.txt");
 
 fn main() {
     println!("Day 1 Part 1 - {}", day1::part1(DAY_1_INPUT));
@@ -64,4 +66,7 @@ fn main() {
 
     println!("Day 12 Part 1 - {}", day12::part1(DAY_12_INPUT));
     println!("Day 12 Part 2 - {}", day12::part2(DAY_12_INPUT));
+
+    println!("Day 13 Part 1 - {}", day13::part1(DAY_13_INPUT));
+    println!("Day 13 Part 2 - {}", day13::part2(DAY_13_INPUT));
 }

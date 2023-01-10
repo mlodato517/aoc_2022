@@ -73,4 +73,5 @@ fn main() {
     println!("Day 13 Part 2 - {}", day13::part2(DAY_13_INPUT));
 
     println!("Day 14 Part 1 - {}", day14::part1(DAY_14_INPUT));
+    println!("Day 14 Part 2 - {}", day14::part2(DAY_14_INPUT));
 }

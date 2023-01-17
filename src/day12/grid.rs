@@ -47,13 +47,10 @@ impl Grid {
         row: usize,
         col: usize,
     ) -> impl Iterator<Item = (usize, usize)> + '_ {
-        // NOTE because of the non-laziness of the subtraction in the `then_some`, we need to run
-        // in release mode so we can ignore the underflowing subtraction. Could use `then(|| ...)`
-        // but...
-        let up = (row > 0).then_some((row - 1, col));
+        let up = (row > 0).then_some((row.wrapping_sub(1), col));
         let down = (row + 1 < self.grid.len()).then_some((row + 1, col));
 
-        let left = (col > 0).then_some((row, col - 1));
+        let left = (col > 0).then_some((row, col.wrapping_sub(1)));
         let right = (col + 1 < self.grid[row].len()).then_some((row, col + 1));
 
         [up, down, left, right]

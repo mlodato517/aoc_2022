@@ -1,3 +1,6 @@
+use std::fmt::Debug;
+use std::time::{Duration, Instant};
+
 use aoc_2022::day1;
 use aoc_2022::day10;
 use aoc_2022::day11;
@@ -29,49 +32,89 @@ const DAY_13_INPUT: &str = include_str!("./day13/input.txt");
 const DAY_14_INPUT: &str = include_str!("./day14/input.txt");
 
 fn main() {
-    println!("Day 1 Part 1 - {}", day1::part1(DAY_1_INPUT));
-    println!("Day 1 Part 2 - {}", day1::part2(DAY_1_INPUT));
+    println!("Day 1 Part 1 - {:?}", with_timing(day1::part1, DAY_1_INPUT));
+    println!("Day 1 Part 2 - {:?}", with_timing(day1::part2, DAY_1_INPUT));
 
-    println!("Day 2 Part 1 - {}", day2::part1(DAY_2_INPUT));
-    println!("Day 2 Part 2 - {}", day2::part2(DAY_2_INPUT));
+    println!("Day 2 Part 1 - {:?}", with_timing(day2::part1, DAY_2_INPUT));
+    println!("Day 2 Part 2 - {:?}", with_timing(day2::part2, DAY_2_INPUT));
 
-    println!("Day 3 Part 1 - {}", day3::part1(DAY_3_INPUT));
-    println!("Day 3 Part 2 - {}", day3::part2(DAY_3_INPUT));
+    println!("Day 3 Part 1 - {:?}", with_timing(day3::part1, DAY_3_INPUT));
+    println!("Day 3 Part 2 - {:?}", with_timing(day3::part2, DAY_3_INPUT));
 
-    println!("Day 4 Part 1 - {}", day4::part1(DAY_4_INPUT));
-    println!("Day 4 Part 2 - {}", day4::part2(DAY_4_INPUT));
+    println!("Day 4 Part 1 - {:?}", with_timing(day4::part1, DAY_4_INPUT));
+    println!("Day 4 Part 2 - {:?}", with_timing(day4::part2, DAY_4_INPUT));
 
-    println!("Day 5 Part 1 - {}", day5::part1(DAY_5_INPUT));
-    println!("Day 5 Part 2 - {}", day5::part2(DAY_5_INPUT));
+    println!("Day 5 Part 1 - {:?}", with_timing(day5::part1, DAY_5_INPUT));
+    println!("Day 5 Part 2 - {:?}", with_timing(day5::part2, DAY_5_INPUT));
 
-    println!("Day 6 Part 1 - {}", day6::part1(DAY_6_INPUT));
-    println!("Day 6 Part 2 - {}", day6::part2(DAY_6_INPUT));
+    println!("Day 6 Part 1 - {:?}", with_timing(day6::part1, DAY_6_INPUT));
+    println!("Day 6 Part 2 - {:?}", with_timing(day6::part2, DAY_6_INPUT));
 
-    println!("Day 7 Part 1 - {}", day7::part1(DAY_7_INPUT));
-    println!("Day 7 Part 2 - {}", day7::part2(DAY_7_INPUT));
+    println!("Day 7 Part 1 - {:?}", with_timing(day7::part1, DAY_7_INPUT));
+    println!("Day 7 Part 2 - {:?}", with_timing(day7::part2, DAY_7_INPUT));
 
-    println!("Day 8 Part 1 - {}", day8::part1(DAY_8_INPUT));
-    println!("Day 8 Part 2 - {}", day8::part2(DAY_8_INPUT));
+    println!("Day 8 Part 1 - {:?}", with_timing(day8::part1, DAY_8_INPUT));
+    println!("Day 8 Part 2 - {:?}", with_timing(day8::part2, DAY_8_INPUT));
 
-    println!("Day 9 Part 1 - {}", day9::part1(DAY_9_INPUT));
-    println!("Day 9 Part 2 - {}", day9::part2(DAY_9_INPUT));
+    println!("Day 9 Part 1 - {:?}", with_timing(day9::part1, DAY_9_INPUT));
+    println!("Day 9 Part 2 - {:?}", with_timing(day9::part2, DAY_9_INPUT));
 
-    println!("Day 10 Part 1 - {}", day10::part1(DAY_10_INPUT));
-    println!("Day 10 Part 2");
-    let day10_part2 = day10::part2(DAY_10_INPUT);
-    for row in day10_part2 {
+    println!(
+        "Day 10 Part 1 - {:?}",
+        with_timing(day10::part1, DAY_10_INPUT)
+    );
+
+    let day10_part2 = with_timing(day10::part2, DAY_10_INPUT);
+    println!("Day 10 Part 2 - {:?}", day10_part2.1);
+    for row in day10_part2.0 {
         println!("\t{}", std::str::from_utf8(&row).unwrap());
     }
 
-    println!("Day 11 Part 1 - {}", day11::part1(DAY_11_INPUT));
-    println!("Day 11 Part 2 - {}", day11::part2(DAY_11_INPUT));
+    println!(
+        "Day 11 Part 1 - {:?}",
+        with_timing(day11::part1, DAY_11_INPUT)
+    );
+    println!(
+        "Day 11 Part 2 - {:?}",
+        with_timing(day11::part2, DAY_11_INPUT)
+    );
 
-    println!("Day 12 Part 1 - {}", day12::part1(DAY_12_INPUT));
-    println!("Day 12 Part 2 - {}", day12::part2(DAY_12_INPUT));
+    println!(
+        "Day 12 Part 1 - {:?}",
+        with_timing(day12::part1, DAY_12_INPUT)
+    );
+    println!(
+        "Day 12 Part 2 - {:?}",
+        with_timing(day12::part2, DAY_12_INPUT)
+    );
 
-    println!("Day 13 Part 1 - {}", day13::part1(DAY_13_INPUT));
-    println!("Day 13 Part 2 - {}", day13::part2(DAY_13_INPUT));
+    println!(
+        "Day 13 Part 1 - {:?}",
+        with_timing(day13::part1, DAY_13_INPUT)
+    );
+    println!(
+        "Day 13 Part 2 - {:?}",
+        with_timing(day13::part2, DAY_13_INPUT)
+    );
 
-    println!("Day 14 Part 1 - {}", day14::part1(DAY_14_INPUT));
-    println!("Day 14 Part 2 - {}", day14::part2(DAY_14_INPUT));
+    println!(
+        "Day 14 Part 1 - {:?}",
+        with_timing(day14::part1, DAY_14_INPUT)
+    );
+    println!(
+        "Day 14 Part 2 - {:?}",
+        with_timing(day14::part2, DAY_14_INPUT)
+    );
+}
+
+fn with_timing<F, T>(f: F, input: &str) -> (T, Duration)
+where
+    F: Fn(&str) -> T,
+    T: Debug,
+{
+    let start = Instant::now();
+    let result = f(input);
+    let time = start.elapsed();
+
+    (result, time)
 }

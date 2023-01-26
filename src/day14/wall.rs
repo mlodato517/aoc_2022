@@ -1,21 +1,21 @@
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, HashSet};
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub(super) struct VerticalWall {
     x: i64,
     y_top: i64,
     y_bottom: i64,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub(super) struct HorizontalWall {
     pub(super) y: i64,
     pub(super) x_left: i64,
     pub(super) x_right: i64,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub(super) enum Wall {
     Horizontal(HorizontalWall),
     Vertical(VerticalWall),
@@ -45,24 +45,10 @@ impl Wall {
         }
     }
 
-    fn top(&self) -> i64 {
-        match self {
-            Self::Vertical(v_wall) => v_wall.y_top,
-            Self::Horizontal(h_wall) => h_wall.y,
-        }
-    }
-
     pub(super) fn bottom(&self) -> i64 {
         match self {
             Self::Vertical(v_wall) => v_wall.y_bottom,
             Self::Horizontal(h_wall) => h_wall.y,
-        }
-    }
-
-    fn contains(&self, (x, y): (i64, i64)) -> bool {
-        match self {
-            Self::Vertical(v_wall) => v_wall.x == x && y >= v_wall.y_top && y <= v_wall.y_bottom,
-            Self::Horizontal(h_wall) => h_wall.y == y && x >= h_wall.x_left && x <= h_wall.x_right,
         }
     }
 }
@@ -95,14 +81,20 @@ impl PartialOrd for DisjointXRange {
     }
 }
 
+pub(super) struct WallRef(_WallRef);
+enum _WallRef {
+    Horizontal(i64),
+    Vertical(*mut VerticalWall),
+}
+
 #[derive(Debug)]
 pub(super) struct Walls {
     // `BTreeMap` was slightly faster than `HashMap` for me. We could bring in a dependency and use
     // a faster hash function but I'm trying to avoid those. This could also be a `Vec` and, unless
     // the X spread is huge (which, for my data, it isn't), it'll be much faster.
-    v_walls: BTreeMap<i64, Vec<usize>>, // If long, could be BTreeSet
-    h_walls: Vec<(DisjointXRange, Vec<usize>)>, // Ditto
-    walls: Vec<Wall>,
+    v_walls: BTreeMap<i64, Vec<VerticalWall>>, // If long, could be BTreeSet
+    h_walls_lookup: Vec<(DisjointXRange, Vec<usize>)>, // Ditto
+    h_walls: Vec<HorizontalWall>,
 }
 
 impl Walls {
@@ -111,36 +103,42 @@ impl Walls {
         let mut unique_walls = HashSet::new();
 
         let mut events = Vec::new();
-        let mut v_walls: BTreeMap<i64, Vec<usize>> = BTreeMap::new();
-        for (i, wall) in walls.iter().enumerate() {
+        let mut h_walls = Vec::new();
+        let mut v_walls: BTreeMap<i64, Vec<VerticalWall>> = BTreeMap::new();
+        for wall in walls {
             let is_new = unique_walls.insert(wall);
             if !is_new {
                 continue;
             }
             match wall {
                 Wall::Vertical(vertical_wall) => {
-                    v_walls.entry(vertical_wall.x).or_default().push(i);
+                    v_walls
+                        .entry(vertical_wall.x) // Could remove this from the value type
+                        .or_default()
+                        .push(vertical_wall);
                 }
                 Wall::Horizontal(horizontal_wall) => {
+                    let idx = h_walls.len();
                     events.extend([
                         SegmentEvent {
                             x: horizontal_wall.x_left,
                             kind: SegmentKind::Start,
-                            idx: i,
+                            idx,
                         },
                         SegmentEvent {
                             // Ranges are exclusive on the right
                             x: horizontal_wall.x_right + 1,
                             kind: SegmentKind::End,
-                            idx: i,
+                            idx,
                         },
                     ]);
+                    h_walls.push(horizontal_wall);
                 }
             }
         }
         events.sort_by_key(|segment_event| segment_event.x);
 
-        let mut h_walls = Vec::new();
+        let mut h_walls_lookup = Vec::new();
         let mut events = events.into_iter();
 
         if let Some(first_event) = events.next() {
@@ -153,7 +151,7 @@ impl Walls {
                     left,
                     right: event.x,
                 };
-                h_walls.push((range, segments.clone()));
+                h_walls_lookup.push((range, segments.clone()));
 
                 // Begin a new range
                 left = event.x;
@@ -174,22 +172,22 @@ impl Walls {
         }
         Self {
             v_walls,
+            h_walls_lookup,
             h_walls,
-            walls,
         }
     }
 
-    pub(super) fn intersection_for_vertical_ray(&self, (x, y): (i64, i64)) -> Option<usize> {
+    pub(super) fn intersection_for_vertical_ray(&mut self, (x, y): (i64, i64)) -> Option<WallRef> {
         let mut min_y = i64::MAX;
         let mut min_idx = None;
 
         let vertical_matches = self.vertical_matches(x);
         if let Some(vertical_matches) = vertical_matches {
-            for &idx in vertical_matches {
-                let top = self.top(idx);
+            for wall in vertical_matches {
+                let top = wall.y_top;
                 if top > y && top < min_y {
                     min_y = top;
-                    min_idx = Some(idx);
+                    min_idx = Some(WallRef(_WallRef::Vertical(wall as _)));
                 }
             }
         }
@@ -197,30 +195,31 @@ impl Walls {
         let horizontal_matches = self.horizontal_matches(x);
         if let Some(horizontal_matches) = horizontal_matches {
             for &idx in horizontal_matches {
-                let top = self.top(idx);
+                let wall = &self.h_walls[idx];
+                let top = wall.y;
                 if top > y && top < min_y {
                     min_y = top;
-                    min_idx = Some(idx);
+                    min_idx = Some(WallRef(_WallRef::Horizontal(top)));
                 }
             }
         }
         min_idx
     }
 
-    pub(super) fn top(&self, wall_idx: usize) -> i64 {
-        self.walls[wall_idx].top()
-    }
-
-    pub(super) fn contains(&self, (x, y): (i64, i64)) -> bool {
-        let vertical_match_contains = self.vertical_matches(x).map_or(false, |idxs| {
-            idxs.iter().any(|&idx| self.walls[idx].contains((x, y)))
+    pub(super) fn contains(&mut self, (x, y): (i64, i64)) -> bool {
+        // Because we lookup by x value we only have to check y value for containment.
+        let vertical_match_contains = self.vertical_matches(x).map_or(false, |walls| {
+            walls
+                .iter()
+                .any(|wall| y >= wall.y_top && y <= wall.y_bottom)
         });
         if vertical_match_contains {
             return true;
         }
 
+        // Because we lookup by x value we only have to check y value for containment.
         let horizontal_match_contains = self.horizontal_matches(x).map_or(false, |idxs| {
-            idxs.iter().any(|&idx| self.walls[idx].contains((x, y)))
+            idxs.iter().any(|&idx| self.h_walls[idx].y == y)
         });
         if horizontal_match_contains {
             return true;
@@ -229,12 +228,12 @@ impl Walls {
         false
     }
 
-    fn vertical_matches(&self, x: i64) -> Option<&Vec<usize>> {
-        self.v_walls.get(&x)
+    fn vertical_matches(&mut self, x: i64) -> Option<&mut Vec<VerticalWall>> {
+        self.v_walls.get_mut(&x)
     }
 
     fn horizontal_matches(&self, x: i64) -> Option<&Vec<usize>> {
-        self.h_walls
+        self.h_walls_lookup
             .binary_search_by(|(range, _)| {
                 // Range is inclusive on left and exclusive on right.
                 if x < range.left {
@@ -245,23 +244,34 @@ impl Walls {
                     Ordering::Equal
                 }
             })
-            .map(|idx| &self.h_walls[idx].1)
+            .map(|idx| &self.h_walls_lookup[idx].1)
             .ok()
     }
 
-    pub(super) fn add_sand_to(&mut self, wall_idx: usize, (x, y): (i64, i64)) {
-        match &mut self.walls[wall_idx] {
-            Wall::Vertical(v_wall) => {
+    pub(super) fn top(&mut self, wall_ref: &mut WallRef) -> i64 {
+        match wall_ref.0 {
+            _WallRef::Vertical(v_wall) => {
+                // CHECK ME
+                let v_wall = unsafe { &mut *v_wall };
+                v_wall.y_top
+            }
+            _WallRef::Horizontal(y) => y,
+        }
+    }
+
+    pub(super) fn add_sand_to(&mut self, wall_ref: WallRef, (x, y): (i64, i64)) {
+        match wall_ref.0 {
+            _WallRef::Vertical(v_wall) => {
+                // CHECK ME
+                let v_wall = unsafe { &mut *v_wall };
                 v_wall.y_top -= 1;
             }
             _ => {
-                let len = self.walls.len();
-                self.walls.push(Wall::Vertical(VerticalWall {
+                self.v_walls.entry(x).or_default().push(VerticalWall {
                     x,
                     y_top: y,
                     y_bottom: y,
-                }));
-                self.v_walls.entry(x).or_default().push(len);
+                });
             }
         }
     }

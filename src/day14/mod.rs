@@ -44,11 +44,11 @@ fn sand_count(mut walls: Walls) -> u64 {
     let mut sand_positions = Vec::new();
     loop {
         // This sand fell off the map - no new sand can fall.
-        let Some(wall_idx) = walls.intersection_for_vertical_ray(sand_position) else {
+        let Some(mut wall_ref) = walls.intersection_for_vertical_ray(sand_position) else {
             return sand_count;
         };
 
-        sand_position.1 = walls.top(wall_idx) - 1;
+        sand_position.1 = walls.top(&mut wall_ref) - 1;
 
         // Attempt to cascade left and then right. If we cascade then we loop again to go back to
         // falling straight down. If we come to a rest, we generate another sand.
@@ -76,7 +76,7 @@ fn sand_count(mut walls: Walls) -> u64 {
             return sand_count;
         }
 
-        walls.add_sand_to(wall_idx, sand_position);
+        walls.add_sand_to(wall_ref, sand_position);
 
         // The next bit of sand will fall at least to the place this sand just came from.
         sand_position = sand_positions.pop().unwrap_or(SAND_FALLING_COORDINATE);

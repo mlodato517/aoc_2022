@@ -12,17 +12,28 @@ pub fn part1(input: &str) -> u64 {
 }
 
 fn elf_ranges(line: &str) -> (RangeInclusive<u64>, RangeInclusive<u64>) {
-    let mut split = line.split([',', '-']);
+    let bytes = line.as_bytes();
+    let mut start = 0;
+    let mut end = 0;
+    while bytes[end] != b'-' {
+        end += 1;
+    }
+    let first_start = line[start..end].parse().expect("First elf invalid start!");
 
-    let first_start = split.next().expect("First elf start missing!");
-    let first_end = split.next().expect("First elf end missing!");
-    let second_start = split.next().expect("Second elf start missing!");
-    let second_end = split.next().expect("Second elf end missing!");
+    start = end + 1;
+    end = start;
+    while bytes[end] != b',' {
+        end += 1;
+    }
+    let first_end = line[start..end].parse().expect("First elf invalid end!");
 
-    let first_start = first_start.parse().expect("First elf invalid start!");
-    let first_end = first_end.parse().expect("First elf invalid end!");
-    let second_start = second_start.parse().expect("Second elf invalid start!");
-    let second_end = second_end.parse().expect("Second elf invalid end!");
+    start = end + 1;
+    end = start;
+    while bytes[end] != b'-' {
+        end += 1;
+    }
+    let second_start = line[start..end].parse().expect("Second elf invalid start!");
+    let second_end = line[end + 1..].parse().expect("Second elf invalid end!");
 
     // This is actually wasted effort. I was hoping there was some `range.contains(&range)` logic
     // but there doesn't appear to be. I'll leave this in here though because it's nice to use

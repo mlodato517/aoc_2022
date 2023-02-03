@@ -6,15 +6,14 @@ mod hand;
 
 pub fn part1(input: &str) -> u64 {
     input
-        .lines()
+        .as_bytes()
+        .chunks_exact(4)
         .map(|line| {
-            let mut parts = line.split(' ');
+            let opponent = line[0];
+            let us = line[2];
 
-            let opponent = parts.next().expect("Missing opponent");
-            let us = parts.next().expect("Missing us");
-
-            let opponent: RockPaperScissors = opponent.parse().unwrap();
-            let us: RockPaperScissors = part1_mapping(us).parse().unwrap();
+            let opponent = RockPaperScissors::from(opponent);
+            let us = RockPaperScissors::from(part1_mapping(us));
 
             us.play_against(&opponent)
         })
@@ -22,25 +21,23 @@ pub fn part1(input: &str) -> u64 {
 }
 
 // In part 1 we thought "X" meant Rock which is "A", etc.
-fn part1_mapping(s: &str) -> &str {
-    match s {
-        "X" => "A",
-        "Y" => "B",
-        "Z" => "C",
-        _ => panic!("Invalid 'us' hand of {s:?}"),
+fn part1_mapping(b: u8) -> u8 {
+    match b {
+        b'X' => b'A',
+        b'Y' => b'B',
+        _ => b'C',
     }
 }
 
 pub fn part2(input: &str) -> u64 {
     input
-        .lines()
+        .as_bytes()
+        .chunks_exact(4)
         .map(|line| {
-            let mut parts = line.split(' ');
+            let opponent = line[0];
+            let us = line[2];
 
-            let opponent = parts.next().expect("Missing opponent");
-            let us = parts.next().expect("Missing us");
-
-            let opponent: RockPaperScissors = opponent.parse().unwrap();
+            let opponent = RockPaperScissors::from(opponent);
 
             let needed_result = part2_mapping(us);
             let us = opponent.generate_hand(needed_result);
@@ -51,12 +48,11 @@ pub fn part2(input: &str) -> u64 {
 }
 
 // In part 2 we know that "X" means we need to lose (e.g. `Ordering::Less`)
-fn part2_mapping(s: &str) -> Ordering {
-    match s {
-        "X" => Ordering::Less,
-        "Y" => Ordering::Equal,
-        "Z" => Ordering::Greater,
-        _ => panic!("Invalid 'match result' hand of {s:?}"),
+fn part2_mapping(b: u8) -> Ordering {
+    match b {
+        b'X' => Ordering::Less,
+        b'Y' => Ordering::Equal,
+        _ => Ordering::Greater,
     }
 }
 

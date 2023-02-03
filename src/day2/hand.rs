@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use std::str::FromStr;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum RockPaperScissors {
@@ -43,7 +42,8 @@ impl RockPaperScissors {
         match new_value {
             -1 => Self::Scissors,
             3 => Self::Rock,
-            n => (n as u8).try_into().unwrap(),
+            // Hopefully the compiler eliminates this addition since `.into()` subtracts it.
+            n => (n as u8 + b'A').into(),
         }
     }
 }
@@ -64,28 +64,12 @@ impl Ord for RockPaperScissors {
     }
 }
 
-impl FromStr for RockPaperScissors {
-    type Err = std::convert::Infallible; // I'm lazy today
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "A" => Ok(Self::Rock),
-            "B" => Ok(Self::Paper),
-            "C" => Ok(Self::Scissors),
-            _ => panic!("Invalid rock paper scissors hand of {s:?}"),
-        }
-    }
-}
-
-impl TryFrom<u8> for RockPaperScissors {
-    type Error = std::convert::Infallible; // I'm still lazy
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(Self::Rock),
-            1 => Ok(Self::Paper),
-            2 => Ok(Self::Scissors),
-            _ => panic!("Invalid rock paper scissors value of '{value}'"),
+impl From<u8> for RockPaperScissors {
+    fn from(value: u8) -> Self {
+        match value - b'A' {
+            0 => Self::Rock,
+            1 => Self::Paper,
+            _ => Self::Scissors,
         }
     }
 }
@@ -96,24 +80,24 @@ mod tests {
 
     #[test]
     fn example1() {
-        let opponent: RockPaperScissors = "A".parse().unwrap();
-        let us: RockPaperScissors = "B".parse().unwrap();
+        let opponent: RockPaperScissors = b'A'.into();
+        let us: RockPaperScissors = b'B'.into();
 
         assert_eq!(us.play_against(&opponent), 8);
     }
 
     #[test]
     fn example2() {
-        let opponent: RockPaperScissors = "B".parse().unwrap();
-        let us: RockPaperScissors = "A".parse().unwrap();
+        let opponent: RockPaperScissors = b'B'.into();
+        let us: RockPaperScissors = b'A'.into();
 
         assert_eq!(us.play_against(&opponent), 1);
     }
 
     #[test]
     fn example3() {
-        let opponent: RockPaperScissors = "C".parse().unwrap();
-        let us: RockPaperScissors = "C".parse().unwrap();
+        let opponent: RockPaperScissors = b'C'.into();
+        let us: RockPaperScissors = b'C'.into();
 
         assert_eq!(us.play_against(&opponent), 6);
     }

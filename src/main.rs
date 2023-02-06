@@ -112,16 +112,29 @@ fn main() {
         "Day 15 Part 1 - {:?}",
         with_timing(day15::part1, (DAY_15_INPUT, 2_000_000))
     );
+    println!(
+        "Day 15 Part 2 - {:?}",
+        with_timing(day15::part2, (DAY_15_INPUT, 0..=4_000_000, 0..=4_000_000))
+    );
 }
 
 fn with_timing<F, A, T>(f: F, input: A) -> (T, Duration)
 where
-    F: Fn(A) -> T,
-    T: Debug,
+    F: Fn(A) -> T + Send + 'static,
+    T: Debug + Send + 'static,
+    A: Send + 'static,
 {
-    let start = Instant::now();
-    let result = f(input);
-    let time = start.elapsed();
+    let (tx, rx) = std::sync::mpsc::sync_channel(1);
+    std::thread::spawn(move || {
+        let start = Instant::now();
+        let result = f(input);
+        let time = start.elapsed();
+        tx.send((result, time))
+            .expect("Sender shouldn't have disconnected yet");
+    });
 
-    (result, time)
+    match rx.recv_timeout(std::time::Duration::from_secs(15)) {
+        Ok((result, time)) => (result, time),
+        Err(_) => panic!("Day failed to complete in 15s!"),
+    }
 }
